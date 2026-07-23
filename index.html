@@ -1,34 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting...</title>
+<meta charset="UTF-8">
+<title>Redirect</title>
 
-  <script>
-    window.onload = function () {
-      window.location.href = "https://wkstudiox.github.io/Moviex/";
-    };
-  </script>
-</head>
-<body>
-  <p>Redirecting...</p>
-</body>
-</html>/* 👆 YAHAN TAK */
-</style>
+<script>
+if (sessionStorage.getItem("opened")) {
+    location.replace("https://wkstudiox.github.io/Moviex/");
+} else {
+    sessionStorage.setItem("opened", "1");
+    location.replace("https://wkstudiox.github.io/Moviex/");
+}
+</script>
 
 </head>
 <body>
-
-<div class="banner">
-    <div class="logo">
-        <span class="line top"></span>
-        <h1>xmoviex</h1>
-        <span class="line bottom"></span>
-    </div>
-</div>
-
-<iframe src="https://pixeldrain.com/u/vrbbddnu"></iframe>
-
 </body>
 </html>
