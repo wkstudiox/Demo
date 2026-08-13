@@ -1,106 +1,329 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="hi">
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
-
-    <title>Video</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Glass • Video + Telegram</title>
     <style>
-
         * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html,
-        body {
-            width: 100%;
-            height: 100%;
             margin: 0;
             padding: 0;
-
-            background: #000;
-
-            overflow: hidden;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            background: 
+                radial-gradient(circle at 20% 20%, #3a1c71 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, #d76d77 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, #ffaf7b 0%, transparent 50%),
+                #0f0c29;
+            background-attachment: fixed;
+            color: #fff;
+            overflow-x: hidden;
         }
 
-        #myVideo {
+        /* Animated liquid blobs */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            z-index: -1;
+            animation: float 12s ease-in-out infinite;
+        }
 
-            width: 100vw;
-            height: 100vh;
+        body::before {
+            background: #00d9ff;
+            top: -100px;
+            left: -100px;
+        }
 
-            object-fit: contain;
+        body::after {
+            background: #ff6b9d;
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -6s;
+        }
 
-            display: block;
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(40px, -30px) scale(1.1); }
+        }
 
-            background: #000;
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 28px;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.35),
+                inset 0 1px 1px rgba(255, 255, 255, 0.25),
+                inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
 
-            outline: none;
-
-            user-select: none;
-            -webkit-user-select: none;
-
-            -webkit-user-drag: none;
-
-            /* Video par click/touch disabled */
+        /* Liquid glass shine */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.08),
+                transparent
+            );
+            transform: skewX(-20deg);
+            animation: shine 6s ease-in-out infinite;
             pointer-events: none;
         }
 
+        @keyframes shine {
+            0% { left: -50%; }
+            20%, 100% { left: 150%; }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 22px;
+            font-size: 1.45rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(90deg, #fff, #a5f3fc, #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(165, 243, 252, 0.3);
+        }
+
+        .video-box {
+            width: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 22px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            max-height: 270px;
+            object-fit: cover;
+        }
+
+        .glass-input {
+            width: 100%;
+            height: 125px;
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            font-size: 15.5px;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-input:focus {
+            border-color: rgba(0, 217, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 0 0 3px rgba(0, 217, 255, 0.15),
+                inset 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-input::placeholder {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .glass-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.85), rgba(0, 150, 255, 0.75));
+            color: #001a2e;
+            font-size: 16.5px;
+            font-weight: 650;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 25px rgba(0, 180, 255, 0.35),
+                inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        }
+
+        .glass-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 30px rgba(0, 180, 255, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.5);
+        }
+
+        .glass-btn:active {
+            transform: translateY(0);
+        }
+
+        .glass-btn:disabled {
+            background: rgba(100, 100, 100, 0.5);
+            color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .glass-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            transition: 0.5s;
+        }
+
+        .glass-btn:hover::after {
+            left: 130%;
+        }
+
+        .status {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 22px;
+            font-weight: 500;
+        }
+
+        .success {
+            color: #4ade80;
+            text-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
+        }
+
+        .error {
+            color: #f87171;
+            text-shadow: 0 0 12px rgba(248, 113, 113, 0.4);
+        }
+
+        .drop {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+        }
+        .drop1 { width: 60px; height: 60px; top: 15%; right: 8%; opacity: 0.5; }
+        .drop2 { width: 35px; height: 35px; bottom: 22%; left: 6%; opacity: 0.4; }
     </style>
-
 </head>
-
-
 <body>
+    <div class="container">
+        <div class="drop drop1"></div>
+        <div class="drop drop2"></div>
 
-    <video
-        id="myVideo"
-        src="video.mp4"
-        autoplay
-        playsinline
-        webkit-playsinline
-        preload="auto"
-        disablepictureinpicture
-        controlslist="nodownload nofullscreen noremoteplayback">
-    </video>
+        <h2>Liquid Glass Messenger</h2>
 
+        <!-- Video - sirf ek baar play hogi (loop nahi) -->
+        <div class="video-box">
+            <video controls autoplay>
+                <source src="video.mp4" type="video/mp4">
+                Browser video support nahi karta.
+            </video>
+        </div>
+
+        <!-- Message Box -->
+        <textarea class="glass-input" id="message" placeholder="Yahan apna message likho..."></textarea>
+
+        <!-- Submit Button -->
+        <button class="glass-btn" id="sendBtn" onclick="sendToTelegram()">
+            Submit → Telegram
+        </button>
+
+        <div id="status" class="status"></div>
+    </div>
 
     <script>
+        // ⚠️ Apna Bot Token aur Chat ID yahan daalo
+        const BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
+        const CHAT_ID   = "YOUR_CHAT_ID_HERE";
 
-        const video = document.getElementById("myVideo");
+        async function sendToTelegram() {
+            const message = document.getElementById("message").value.trim();
+            const statusDiv = document.getElementById("status");
+            const btn = document.getElementById("sendBtn");
 
-        let lastTime = 0;
-        let finished = false;
+            if (!message) {
+                statusDiv.innerHTML = '<span class="error">⚠️ Message likho pehle!</span>';
+                return;
+            }
 
+            if (BOT_TOKEN === "YOUR_BOT_TOKEN_HERE" || CHAT_ID === "YOUR_CHAT_ID_HERE") {
+                statusDiv.innerHTML = '<span class="error">⚠️ BOT_TOKEN aur CHAT_ID set karo!</span>';
+                return;
+            }
 
-        /* =========================
-           AUTOPLAY VIDEO
-        ========================= */
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            statusDiv.innerHTML = "⏳ Message bheja ja raha hai...";
 
-        video.addEventListener("loadeddata", function () {
+            try {
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: "HTML"
+                    })
+                });
 
-            video.muted = false;
+                const data = await response.json();
 
-            video.play().catch(function (error) {
+                if (data.ok) {
+                    statusDiv.innerHTML = '<span class="success">✅ Message Telegram pe successfully bhej diya!</span>';
+                    document.getElementById("message").value = "";
+                } else {
+                    statusDiv.innerHTML = `<span class="error">❌ Error: ${data.description || "Kuch galat hua"}</span>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">❌ Network Error: ${error.message}</span>`;
+            }
 
-                console.log(
-                    "Video autoplay blocked:",
-                    error
-                );
-
+            btn.disabled = false;
+            btn.innerText = "Submit → Telegram";
+        }
+    </script>
+</body>
+</html>
             });
 
         });
