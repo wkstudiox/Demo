@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Messenger</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0b0b0f;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #15151c;
+            border: 1px solid #292933;
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            background: #5865f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #30303a;
+            background: #0e0e13;
+            color: white;
+            outline: none;
+            font-size: 16px;
+        }
+
+        input:focus {
+            border-color: #5865f2;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: #5865f2;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .error {
+            color: #ff5555;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="logo">
+            💬
+        </div>
+
+        <h1>Messenger</h1>
+
+        <div class="subtitle">
+            Enter your username to continue
+        </div>
+
+        <label for="username">Username</label>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Enter your username"
+            maxlength="30"
+            autocomplete="off"
+        >
+
+        <div class="error" id="error">
+            Please enter a username.
+        </div>
+
+        <button onclick="continueToRoom()">
+            Continue
+        </button>
+
+    </div>
+
+    <script>
+        function continueToRoom() {
+
+            const usernameInput = document.getElementById("username");
+            const error = document.getElementById("error");
+
+            const username = usernameInput.value.trim();
+
+            if (username === "") {
+                error.style.display = "block";
+                usernameInput.focus();
+                return;
+            }
+
+            if (username.length < 2) {
+                error.textContent = "Username must be at least 2 characters.";
+                error.style.display = "block";
+                usernameInput.focus();
+                return;
+            }
+
+            error.style.display = "none";
+
+            // Save username
+            localStorage.setItem("messenger_username", username);
+
+            // Go to room page
+            window.location.href = "room.html";
+        }
+
+        // Enter key support
+        document.getElementById("username").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                continueToRoom();
+            }
+        });
+    </script>
+
+</body>
+</html>

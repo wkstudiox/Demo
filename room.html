@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Room - Messenger</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0b0b0f;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: #15151c;
+            border: 1px solid #292933;
+            border-radius: 22px;
+            padding: 28px 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .top {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 16px;
+            border-radius: 18px;
+            background: #5865f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 7px;
+        }
+
+        .welcome {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .username {
+            color: #5865f2;
+            font-weight: bold;
+        }
+
+        .section {
+            background: #101017;
+            border: 1px solid #292933;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 7px;
+        }
+
+        .section p {
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 11px;
+            background: #5865f2;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .join-box {
+            display: none;
+            margin-top: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 11px;
+            border: 1px solid #30303a;
+            background: #0b0b0f;
+            color: white;
+            outline: none;
+            font-size: 16px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        input:focus {
+            border-color: #5865f2;
+        }
+
+        .error {
+            color: #ff5555;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .user-info {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="top">
+
+            <div class="logo">
+                💬
+            </div>
+
+            <h1>Messenger</h1>
+
+            <div class="welcome">
+                Welcome,
+                <span class="username" id="username"></span>
+            </div>
+
+        </div>
+
+
+        <!-- CREATE ROOM -->
+
+        <div class="section">
+
+            <h2>Create a Room</h2>
+
+            <p>
+                Create a new room and invite others using the room code.
+            </p>
+
+            <button onclick="createRoom()">
+                + Create Room
+            </button>
+
+        </div>
+
+
+        <!-- JOIN ROOM -->
+
+        <div class="section">
+
+            <h2>Join a Room</h2>
+
+            <p>
+                Enter a room code to join an existing room.
+            </p>
+
+            <button onclick="showJoinBox()">
+                Join Room
+            </button>
+
+
+            <div class="join-box" id="joinBox">
+
+                <input
+                    type="text"
+                    id="roomCode"
+                    placeholder="ENTER ROOM CODE"
+                    maxlength="8"
+                    autocomplete="off"
+                >
+
+                <button onclick="joinRoom()">
+                    Join
+                </button>
+
+                <div class="error" id="error">
+                    Please enter a room code.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="user-info">
+            Your username is saved on this device.
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // Get username
+        const username = localStorage.getItem("messenger_username");
+
+        // If username doesn't exist, go back
+        if (!username) {
+            window.location.href = "index.html";
+        }
+
+        document.getElementById("username").textContent = username;
+
+
+        // Create random room code
+        function generateRoomCode() {
+
+            const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+            let code = "";
+
+            for (let i = 0; i < 6; i++) {
+                code += characters.charAt(
+                    Math.floor(Math.random() * characters.length)
+                );
+            }
+
+            return code;
+        }
+
+
+        // Create Room
+        function createRoom() {
+
+            const roomCode = generateRoomCode();
+
+            // Save room information
+            localStorage.setItem("messenger_room", roomCode);
+            localStorage.setItem("messenger_room_type", "created");
+
+            // Open chat
+            window.location.href =
+                "chat.html?room=" + roomCode;
+        }
+
+
+        // Show join input
+        function showJoinBox() {
+
+            document.getElementById("joinBox").style.display = "block";
+
+            document.getElementById("roomCode").focus();
+        }
+
+
+        // Join Room
+        function joinRoom() {
+
+            const input =
+                document.getElementById("roomCode");
+
+            const error =
+                document.getElementById("error");
+
+            const roomCode =
+                input.value.trim().toUpperCase();
+
+
+            if (roomCode === "") {
+
+                error.textContent =
+                    "Please enter a room code.";
+
+                error.style.display = "block";
+
+                input.focus();
+
+                return;
+            }
+
+
+            if (roomCode.length < 4) {
+
+                error.textContent =
+                    "Invalid room code.";
+
+                error.style.display = "block";
+
+                input.focus();
+
+                return;
+            }
+
+
+            error.style.display = "none";
+
+
+            // Save room
+            localStorage.setItem(
+                "messenger_room",
+                roomCode
+            );
+
+            localStorage.setItem(
+                "messenger_room_type",
+                "joined"
+            );
+
+
+            // Open chat
+            window.location.href =
+                "chat.html?room=" + roomCode;
+        }
+
+
+        // Enter key
+        document
+            .getElementById("roomCode")
+            .addEventListener("keydown", function(event) {
+
+                if (event.key === "Enter") {
+                    joinRoom();
+                }
+
+            });
+
+    </script>
+
+</body>
+</html>
