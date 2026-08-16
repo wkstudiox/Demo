@@ -747,9 +747,17 @@
   }
 
   function handleCellClick(index) {
-    if (gameOver || board[index]) return;
+  if (gameOver || board[index]) return;
+
+  if (isOnline) {
+    // Online mode
+    if (turn !== playerSymbol) return; // apni turn nahi hai
+    makeOnlineMove(index);
+  } else {
+    // Normal mode (PvP / Bot)
     makeMove(index);
   }
+      }
 
   function makeMove(index) {
     const player = turn;
