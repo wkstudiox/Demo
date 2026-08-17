@@ -962,10 +962,44 @@ if (gameMode === 'pvb' && turn === botPlayer && !gameOver) {
   }
   
   function restartGame() {
+
+  // ONLINE MODE
+  if (isOnline && roomId) {
+
     document.getElementById('win-overlay').classList.remove('show');
     document.getElementById('draw-overlay').classList.remove('show');
-    initGame();
+
+    import("https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js")
+      .then(({ ref, update }) => {
+
+        const roomRef = ref(window.db, "rooms/" + roomId);
+
+        // Next round ka starter change hoga
+        const newStarter = (turn === "X") ? "O" : "X";
+
+        update(roomRef, {
+          board: ["", "", "", "", "", "", "", ""],
+          historyX: [],
+          historyO: [],
+          turn: newStarter,
+          gameOver: false,
+          round: Date.now()
+        });
+
+      })
+      .catch(err => {
+        console.error("Play Again error:", err);
+      });
+
+    return;
   }
+
+  // OFFLINE MODE
+  document.getElementById('win-overlay').classList.remove('show');
+  document.getElementById('draw-overlay').classList.remove('show');
+
+  initGame();
+}
   function updateTurnUI() {
     const pill = document.getElementById('turn-pill');
     pill.textContent = turn;
@@ -1401,14 +1435,14 @@ function createRoom() {
       const roomRef = ref(window.db, "rooms/" + roomId);
 
       set(roomRef, {
-        playerX: true,
-        playerO: false,
-        turn: "X",
-        board: ["", "", "", "", "", "", "", "", ""],
-        historyX: [],
-        historyO: [],
-        status: "waiting"
-      })
+  playerX: true,
+  playerO: false,
+  turn: "X",
+  board: ["", "", "", "", "", "", "", "", ""],
+  historyX: [],
+  historyO: [],
+  status: "waiting"
+})
       .then(() => {
         showRoomSuccess(roomId);
         startOnlineGame();
@@ -1532,35 +1566,86 @@ function listenToRoom(roomRef, onValue) {
   // Pehle se koi listener ho to hatao
   if (roomListener) roomListener();
 
+  let lastRound = null;
+
   roomListener = onValue(roomRef, (snapshot) => {
     const data = snapshot.val();
     if (!data) return;
 
-    // Board sync
-    board = data.board.map(c => c === "" ? null : c);
+    // =========================
+    // NEW ROUND DETECT
+    // =========================
+    if (data.round && data.round !== lastRound) {
+      lastRound = data.round;
+
+      board = data.board
+        ? data.board.map(c => c === "" ? null : c)
+        : Array(9).fill(null);
+
+      historyX = data.historyX || [];
+      historyO = data.historyO || [];
+
+      turn = data.turn || "X";
+      gameOver = false;
+      lastPlacedIndex = -1;
+
+      // Result popup close
+      document.getElementById('win-overlay').classList.remove('show');
+      document.getElementById('draw-overlay').classList.remove('show');
+
+      updateTurnUI();
+      renderBoard();
+
+      return;
+    }
+
+    // =========================
+    // NORMAL BOARD SYNC
+    // =========================
+    board = data.board
+      ? data.board.map(c => c === "" ? null : c)
+      : Array(9).fill(null);
+
     historyX = data.historyX || [];
     historyO = data.historyO || [];
-    turn = data.turn;
+    turn = data.turn || "X";
 
     updateTurnUI();
     renderBoard();
 
-    // Win / Draw check
-    const winner = checkWin("X") ? "X" : (checkWin("O") ? "O" : null);
+    // =========================
+    // WIN / DRAW CHECK
+    // =========================
+    const winner =
+      checkWin("X")
+        ? "X"
+        : (checkWin("O") ? "O" : null);
 
     if (winner && !gameOver) {
       gameOver = true;
-      if (winner === "X") scoreX++;
-      else scoreO++;
+
+      if (winner === "X") {
+        scoreX++;
+      } else {
+        scoreO++;
+      }
+
       updateScoreUI();
       highlightWin(checkWin(winner));
       playWinSound();
-      setTimeout(() => showWin(winner), 600);
-    } 
-    else if (isBoardFull() && !gameOver) {
+
+      setTimeout(() => {
+        showWin(winner);
+      }, 600);
+
+    } else if (isBoardFull() && !gameOver) {
+
       gameOver = true;
       playDrawSound();
-      setTimeout(() => showDraw(), 600);
+
+      setTimeout(() => {
+        showDraw();
+      }, 600);
     }
   });
 }
@@ -1580,7 +1665,7 @@ function makeOnlineMove(index) {
 
       const hist = playerSymbol === "X" ? newHistoryX : newHistoryO;
 
-      // Oldest mark hatao (3 se zyada ho to)
+      // Oldest hatao (3 se zyada ho to)
       if (hist.length >= 3) {
         const oldest = hist.shift();
         newBoard[oldest] = null;
@@ -1633,4 +1718,4 @@ function makeOnlineMove(index) {
 </script>
 
 </body>
-</html>
+  </html>
